@@ -4,6 +4,7 @@ pd.set_option('display.max_columns', None)
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pandas.api.types import is_string_dtype
+import numpy as np
 
 #%%
 df = pd.read_csv("C:/Users/10331/OneDrive/Documents/GitHub/Emory-ISOM672-Intro-to-BA/BA project/hotel_bookings.csv")
@@ -43,9 +44,6 @@ for i in list(df. columns):
     del num[0]
         
 #%%
-sns.pairplot(df)
-sns.catplot("hotel","country", data = df)
-type(df["country"][5])
 
 #Heatmap CM
 corr= df.corr()
