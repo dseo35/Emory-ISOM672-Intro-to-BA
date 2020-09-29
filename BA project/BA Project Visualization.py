@@ -46,3 +46,28 @@ for i in list(df. columns):
 sns.pairplot(df)
 sns.catplot("hotel","country", data = df)
 type(df["country"][5])
+
+#Heatmap CM
+corr= df.corr()
+mask = np.triu(np.ones_like(corr))
+
+
+plt.figure(figsize=(16, 16))
+ax = sns.heatmap(
+    corr,
+    vmin=-.5, vmax=.5, center=0,
+    cmap= sns.diverging_palette(20,220, n=200),
+    square = True, 
+    linewidth=4,
+    annot = True, 
+    fmt='.1g',
+    mask = mask
+
+    )
+
+ax.set_xticklabels(
+    ax.get_xticklabels(),
+    rotation=45,
+    horizontalalignment = 'right'
+    )
+
