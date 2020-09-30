@@ -1,18 +1,29 @@
 
 import pandas as pd
 pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pandas.api.types import is_string_dtype
 import numpy as np
 
 #%%
-df = pd.read_csv("C:/Users/10331/OneDrive/Documents/GitHub/Emory-ISOM672-Intro-to-BA/BA project/hotel_bookings.csv")
-df.shape
-df.describe()
+data = pd.read_csv("C:/Users/10331/OneDrive/Documents/GitHub/Emory-ISOM672-Intro-to-BA/BA project/hotel_bookings.csv")
+data.shape
+data.describe()
+data.dtypes
+data.head()
+is_string_dtype(data["hotel"])
+
+#%% Feature Selection 1
+df = data[:]
+df.drop("arrival_date_year",axis =1, inplace = True)
+df.drop("reservation_status",axis =1, inplace = True)
+df.drop("reservation_status_date",axis =1, inplace = True)
+df.drop("company",axis =1, inplace = True)
+df.drop("assigned_room_type",axis =1, inplace = True)
+
 df.dtypes
-df.head()
-is_string_dtype(df["hotel"])
 
 #%%
 for i in range(len(df. columns)):
@@ -27,7 +38,7 @@ for i in range(len(df. columns)):
             plt.ylim(0,10)
             plt.xlim(df.iloc[:,i].quantile(0.75),df.iloc[:,i].max()+5)
             plt.show()
-        
+
 #%%
 num = list(df. columns)
 for i in list(df. columns):
@@ -42,7 +53,26 @@ for i in list(df. columns):
             sns.relplot(i,j,data = df)
             plt.show()
     del num[0]
-        
+
+#%%
+for i in list(df. columns):
+    sns.catplot("is_canceled",i,data = df)
+    plt.show()
+
+#%%
+viz1 = data.loc[:,["agent","arrival_date_year"]]
+viz2 = viz1.groupby(["agent","arrival_date_year"]).size()
+viz2 = viz2.reset_index()
+viz2.dtypes
+tmp = viz2[viz2.arrival_date_year == 2017]
+tmp.groupby(0).size()
+tmp = tmp[tmp[0] > 100]
+viz2 = viz2[viz2.agent.isin(tmp.agent)]
+
+tmp = viz2.groupby(["agent"]).sum()
+tmp = tmp[tmp[0] > 500]
+tmp = viz2[viz2.0 > ]
+
 #%%
 
 #Heatmap CM
@@ -69,3 +99,23 @@ ax.set_xticklabels(
     horizontalalignment = 'right'
     )
 
+#%%
+
+from sklearn.datasets import fetch_20newsgroups
+from sklearn.feature_selection import mutual_info_classif
+from sklearn.feature_extraction.text import CountVectorizer
+
+categories = ['customer_type', 'market_segment']
+newsgroups_train = fetch_20newsgroups(subset='train',
+                                      categories=categories)
+
+X, Y = df.iloc[:,2:], df.is_canceled
+cv = CountVectorizer(max_df=0.95, min_df=2,
+                                     max_features=10000,
+                                     stop_words='english')
+X_vec = cv.fit_transform(X)
+
+res = dict(zip(cv.get_feature_names(),
+               mutual_info_classif(X_vec, Y, discrete_features=True)
+               ))
+print(res)
